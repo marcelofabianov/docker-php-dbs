@@ -84,6 +84,20 @@ RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/usr/local/ins
     docker-php-ext-install pdo_oci && \
     docker-php-ext-enable oci8
 
+# Install / Composer
+ENV COMPOSER_HOME /composer
+ENV PATH ./vendor/bin:/composer/vendor/bin:$PATH
+ENV COMPOSER_ALLOW_SUPERUSER 1
+RUN curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer
+
+# Install / Deployer
+RUN curl -LO https://deployer.org/deployer.phar
+RUN mv deployer.phar /usr/local/bin/dep
+RUN chmod +x /usr/local/bin/dep
+
+# Config PHP
+COPY ./php.ini /usr/local/etc/php/php.ini
+
 RUN usermod -u 1000 www-data
 
 COPY --chown=www-data:www-data . /var/www/
