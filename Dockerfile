@@ -50,8 +50,13 @@ RUN rm /etc/apt/preferences.d/no-debian-php && \
 
 # PHP Extensões
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
-    pecl install xdebug && \
+    docker-php-ext-configure pgsql --with-pgsql=/usr/local/pgsql && \
+    pecl install xdebug sqlsrv pdo_sqlsrv && \
     docker-php-ext-install \
+    pdo_mysql \
+    mysqli \
+    pgsql \
+    pdo_pgsql \
     gd \
     soap \
     bcmath \
@@ -63,7 +68,9 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
     pdo && \
     docker-php-ext-enable \
     xdebug \
-    opcache
+    opcache \
+    sqlsrv \
+    pdo_sqlsrv
 
 ## Instantclient oracle
 COPY ./instantclient_19_3.zip /tmp/instantclient.zip
@@ -76,12 +83,6 @@ RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/usr/local/ins
     echo 'instantclient,/usr/local/instantclient' | pecl install oci8 && \
     docker-php-ext-install pdo_oci && \
     docker-php-ext-enable oci8
-
-RUN pecl install sqlsrv pdo_sqlsrv
-
-RUN docker-php-ext-enable \
-    sqlsrv \
-    pdo_sqlsrv
 
 RUN usermod -u 1000 www-data
 
