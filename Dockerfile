@@ -65,6 +65,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
     xdebug \
     opcache
 
+## Instantclient oracle
 COPY ./instantclient_19_3.zip /tmp/instantclient.zip
 
 RUN unzip /tmp/instantclient.zip -d /usr/local/ && \
@@ -75,11 +76,6 @@ RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/usr/local/ins
     echo 'instantclient,/usr/local/instantclient' | pecl install oci8 && \
     docker-php-ext-install pdo_oci && \
     docker-php-ext-enable oci8
-
-## SQLServer
-RUN wget -qO - https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-    && wget -qO - https://packages.microsoft.com/config/debian/9/prod.list \
-    > /etc/apt/sources.list.d/mssql-release.list
 
 RUN pecl install sqlsrv pdo_sqlsrv
 

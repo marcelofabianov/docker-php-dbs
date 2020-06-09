@@ -6,4 +6,4 @@ Ambiente Docker com PHP para se trabalhar com múltiplas conexões entre bancos 
 - Postgres
 - Firebird
 - Oracle
-- SQLServer (em breve)
+- SQLServer
