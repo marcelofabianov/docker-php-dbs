@@ -67,6 +67,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
     sockets \
     zip \
     ftp \
+    pdo_firebird \
     pdo && \
     docker-php-ext-enable \
     xdebug \
