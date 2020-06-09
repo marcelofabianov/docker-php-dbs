@@ -8,7 +8,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # PHP Dependências
 RUN rm /etc/apt/preferences.d/no-debian-php && \
-    apt-get update && \
+    apt-get update -yqq && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
     autoconf \
@@ -40,11 +40,13 @@ RUN rm /etc/apt/preferences.d/no-debian-php && \
     libzip-dev \
     libicu-dev \
     unixodbc-dev \
-    openssl \
-    firebird-dev && \
+    firebird-dev \
+    openssl && \
     curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
     curl https://packages.microsoft.com/config/debian/9/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
-    apt-get update && \
+    apt-get update  -yqq && \
+    sed -i 's,^\(MinProtocol[ ]*=\).*,\1'TLSv1.0',g' /etc/ssl/openssl.cnf && \
+    sed -i 's,^\(CipherString[ ]*=\).*,\1'DEFAULT@SECLEVEL=1',g' /etc/ssl/openssl.cnf && \
     ACCEPT_EULA=Y apt-get install -y msodbcsql17 mssql-tools && \
     rm -rf /var/lib/apt/lists/*
 
