@@ -81,22 +81,16 @@ COPY ./instantclient_19_3.zip /tmp/instantclient.zip
 RUN unzip /tmp/instantclient.zip -d /usr/local/ && \
     ln -s /usr/local/instantclient/sqlplus /usr/bin/sqlplus
 
-## OCI
+# OCI
 RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/usr/local/instantclient && \
-    echo 'instantclient,/usr/local/instantclient' | pecl install oci8 && \
+    echo 'instantclient,/usr/local/instantclient' | pecl install oci8-2.2.0 && \
     docker-php-ext-install pdo_oci && \
     docker-php-ext-enable oci8
 
 # Install / Composer
-ENV COMPOSER_HOME /composer
-ENV PATH ./vendor/bin:/composer/vendor/bin:$PATH
-ENV COMPOSER_ALLOW_SUPERUSER 1
-RUN curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer
-
-# Install / Deployer
-RUN curl -LO https://deployer.org/deployer.phar
-RUN mv deployer.phar /usr/local/bin/dep
-RUN chmod +x /usr/local/bin/dep
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+RUN php -r "if (hash_file('sha384', 'composer-setup.php') === '756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
 # Config PHP
 COPY ./php.ini /usr/local/etc/php/php.ini
@@ -104,9 +98,9 @@ COPY ./php.ini /usr/local/etc/php/php.ini
 RUN usermod -u 1000 www-data
 
 COPY --chown=www-data:www-data . /var/www/
-COPY --chown=www-data:www-data . /composer/
+COPY --chown=www-data:www-data . /var/www/.composer/
 
-RUN chown -R www-data /composer/
+RUN chown -R www-data /var/www/.composer/
 
 USER www-data
 
