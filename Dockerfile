@@ -95,14 +95,15 @@ RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 # Config PHP
 COPY ./php.ini /usr/local/etc/php/php.ini
 
-RUN usermod -u 1000 www-data
+RUN useradd -m devs
 
-COPY --chown=www-data:www-data . /var/www/
-COPY --chown=www-data:www-data . /var/www/.composer/
+RUN usermod -u 1000 devs
 
-RUN chown -R www-data /var/www/.composer/
+COPY --chown=devs:www-data . /var/www
 
-USER www-data
+RUN chown -R www-data /var/www
+
+USER devs
 
 EXPOSE 9000
 
